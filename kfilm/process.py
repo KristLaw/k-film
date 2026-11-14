@@ -1,4 +1,4 @@
-"""The darkroom: turns linear camera RGB into a film-looking print."""
+"""The darkroom: turns linear camera RGB into a film-looking print (K-Film engine)."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,17 +19,24 @@ def srgb_to_linear(v: np.ndarray) -> np.ndarray:
     return np.where(v <= 0.04045, v / 12.92, ((v + 0.055) / 1.055) ** 2.4)
 
 
-def load_linear(path: str | Path, half_size: bool = False) -> np.ndarray:
-    """Return a float32 HxWx3 scene-linear image (mid grey ~0.18)."""
+def load_linear(path: str | Path, half_size: bool = False, wb: str = "camera") -> np.ndarray:
+    """Return a float32 HxWx3 scene-linear image (mid grey ~0.18).
+
+    wb="camera" uses the 450D's white balance; wb="daylight" uses fixed
+    daylight, as M-Film's lab does (so tungsten films go blue outdoors)."""
     path = Path(path)
     if path.suffix.lower() in RAW_EXT:
         import rawpy
 
         with rawpy.imread(str(path)) as raw:
+            kw = dict(use_camera_wb=True)
+            if wb == "daylight":
+                day = list(raw.daylight_whitebalance)
+                if day and day[1] > 0:
+                    kw = dict(use_camera_wb=False, user_wb=[v / day[1] for v in day])
             rgb = raw.postprocess(
                 gamma=(1, 1), no_auto_bright=True, output_bps=16,
-                use_camera_wb=True, half_size=half_size,
-                output_color=rawpy.ColorSpace.sRGB,
+                half_size=half_size, output_color=rawpy.ColorSpace.sRGB, **kw,
             )
         # Linear 16-bit output: a correctly metered 18% grey lands near 0.18.
         return rgb.astype(np.float32) / 65535.0
@@ -133,6 +140,29 @@ def add_grain(y: np.ndarray, amount: float, size: float, mono: bool,
     return out
 
 
+def add_grain_field(y: np.ndarray, amount: float, size: float, mono: bool,
+                    rng: np.random.Generator) -> np.ndarray:
+    """M-Film's grain: +-amount in display units, strongest in the mid tones,
+    colour grain = 3/4 shared + 2/4 own per channel. `size` in print pixels."""
+    h, w = y.shape[:2]
+    cell = max(1.0, size)
+    gw, gh = max(4, int(w / cell)), max(4, int(h / cell))
+
+    def field():
+        n = rng.uniform(-1, 1, (gh, gw)).astype(np.float32)
+        return _resize(n, w, h) if (gw, gh) != (w, h) else n
+
+    lum = luminance(np.clip(y, 0, 1))
+    weight = (4.0 * lum * (1.0 - lum)) * amount
+    shared = field()
+    if mono:
+        return y + (shared * weight)[..., None]
+    out = y.copy()
+    for c in range(3):
+        out[..., c] += (shared * 3 + field() * 2) / 4 * weight
+    return out
+
+
 def vignette(y: np.ndarray, amount: float = 0.12) -> np.ndarray:
     h, w = y.shape[:2]
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
@@ -182,19 +212,28 @@ def to_image(y: np.ndarray) -> Image.Image:
 SIZES = {"full": None, "large": 3000, "web": 2048, "screen": 1080}
 
 
-def print_frame(path: str | Path, stock: FilmStock, out: str | Path,
+def print_frame(path: str | Path, film, out: str | Path,
                 size: str = "web", ev: float = 0.0, seed: int = 0,
                 lut=None, quality: int = 92) -> Path:
+    """Develop one file with a Film (films.py) or a bare FilmStock."""
+    stock = getattr(film, "stock", None) or (film if isinstance(film, FilmStock) else None)
+    engine = "kfilm" if stock is not None else "mfilm"
     long_edge = SIZES[size]
     half = long_edge is not None and long_edge <= 2136   # half of 4272
-    lin = load_linear(path, half_size=half)
+    lin = load_linear(path, half_size=half, wb="camera" if engine == "kfilm" else "daylight")
     h, w = lin.shape[:2]
     if long_edge and max(h, w) > long_edge:
         s = long_edge / max(h, w)
         nw, nh = int(w * s), int(h * s)
         lin = np.stack([_resize(lin[..., c], nw, nh) for c in range(3)], -1)
-    grain_scale = max(lin.shape[:2]) / CAMERA_450D["width"]
-    y = develop(lin, stock, ev=ev, seed=seed, grain_scale=grain_scale, lut=lut)
+    scale = max(lin.shape[:2]) / CAMERA_450D["width"]
+    if engine == "kfilm":
+        y = develop(lin, stock, ev=ev, seed=seed, grain_scale=scale, lut=lut)
+    else:
+        from . import mfilm
+        y = mfilm.develop(lin, film.data, ev=ev, seed=seed, scale=scale)
+        if lut is not None:
+            y = lut.apply(np.clip(y, 0, 1))
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     to_image(y).save(out, quality=quality)

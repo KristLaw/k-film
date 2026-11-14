@@ -1,7 +1,7 @@
 """Roll bookkeeping on the SD card.
 
 The 450D can't run custom code, so the "roll" lives as a small JSON file on
-the card. When you load a roll we remember every photo already on the card;
+the card (KFILM/ROLL.JSON; cards from XSi Darkroom 0.1 used XSIROLL/). When you load a roll we remember every photo already on the card;
 everything you shoot after that belongs to the roll, in shooting order.
 """
 from __future__ import annotations
@@ -12,8 +12,15 @@ import time
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-ROLL_DIR = "XSIROLL"
+ROLL_DIR = "KFILM"
+LEGACY_DIR = "XSIROLL"
 PHOTO_EXT = {".cr2", ".jpg", ".jpeg"}
+
+
+def roll_dir(card: Path) -> Path:
+    """KFILM/, or XSIROLL/ on a card that still has an XSi Darkroom 0.1 roll."""
+    new, old = Path(card) / ROLL_DIR, Path(card) / LEGACY_DIR
+    return old if old.is_dir() and not new.is_dir() else new
 
 
 @dataclass
@@ -27,11 +34,14 @@ class Roll:
     rewound: bool = False
     fog_frames: list = field(default_factory=list)  # frames hit by light
     developed: bool = False
+    rewound_at: float | None = None
+    darkrooms: str = ""            # M-Film film key in the Darkrooms roll log ("" = off)
+    log_number: int = 0            # ROLL_nnn.TXT
 
     # ------------------------------------------------------------ storage
     @staticmethod
     def path(card: Path) -> Path:
-        return Path(card) / ROLL_DIR / "ROLL.JSON"
+        return roll_dir(card) / "ROLL.JSON"
 
     def save(self, card: Path) -> None:
         p = self.path(card)
@@ -43,10 +53,12 @@ class Roll:
         p = cls.path(card)
         if not p.exists():
             return None
-        return cls(**json.loads(p.read_text()))
+        d = json.loads(p.read_text())
+        known = cls.__dataclass_fields__
+        return cls(**{k: v for k, v in d.items() if k in known})
 
     def archive(self, card: Path) -> None:
-        hist = Path(card) / ROLL_DIR / "HISTORY.JSON"
+        hist = roll_dir(card) / "HISTORY.JSON"
         items = json.loads(hist.read_text()) if hist.exists() else []
         d = asdict(self)
         d.pop("existing")
@@ -81,7 +93,7 @@ class Roll:
         if not exposed:
             return False, "No frames shot on this roll yet."
         if self.mode == "realistic" and not self.rewound:
-            return False, ("Realistic mode: rewind the roll first (`xsi rewind`). "
+            return False, ("Realistic mode: rewind the roll first (`kfilm rewind`). "
                            "Opening the back now would fog it.")
         return True, ""
 
@@ -90,7 +102,7 @@ def scan_card(card: Path) -> list[Path]:
     dcim = Path(card) / "DCIM"
     root = dcim if dcim.exists() else Path(card)
     return [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in PHOTO_EXT
-            and ROLL_DIR not in p.parts]
+            and ROLL_DIR not in p.parts and LEGACY_DIR not in p.parts]
 
 
 def _key(card: Path, p: Path) -> str:
@@ -105,8 +117,10 @@ def _order(p: Path):
             int(num.group(1)) if num else 0, p.stat().st_mtime)
 
 
-def new_roll(card: Path, stock: str, frames: int, mode: str, push: float) -> Roll:
+def new_roll(card: Path, stock: str, frames: int, mode: str, push: float,
+             darkrooms: str = "") -> Roll:
     existing = [_key(card, p) for p in scan_card(card)]
-    r = Roll(stock=stock, frames=frames, mode=mode, push=push, existing=existing)
+    r = Roll(stock=stock, frames=frames, mode=mode, push=push, existing=existing,
+             darkrooms=darkrooms)
     r.save(card)
     return r

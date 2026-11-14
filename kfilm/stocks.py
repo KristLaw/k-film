@@ -170,8 +170,37 @@ _add(FilmStock("nostalgicneg", "Nostalgic Neg", "color", 400,
                tags=("recipe",)))
 
 
+_add(FilmStock("kodachrome64r", "Kodachrome 64 (recipe)", "color", 64,
+               "Kodachrome 64 recipe by Fuji X Weekly (Classic Chrome base)",
+               "Punchy, warm, deep shadows and bold reds. Sharp, little grain.",
+               contrast=1.12, latitude=1.0, crossover=(-0.04, 0.0, 0.06),
+               gain=(1.05, 1.0, 0.9), saturation=1.08, fade=0.0,
+               grain=0.012, grain_size=0.9, tags=("recipe",)))
+_add(FilmStock("cinestill800tr", "CineStill 800T (recipe)", "color", 800,
+               "CineStill 800T recipe by Fuji X Weekly (Eterna base)",
+               "Cool teal night look, glowing lights, big grain. For city nights.",
+               contrast=0.95, latitude=1.2, crossover=(0.08, 0.0, -0.06),
+               gain=(0.9, 1.0, 1.06), saturation=1.05, fade=0.03,
+               shadow_tint=(-0.008, 0.004, 0.012), grain=0.034, grain_size=1.6,
+               halation=0.5, tags=("recipe", "tungsten")))
+_add(FilmStock("pacificblues", "Pacific Blues", "color", 400,
+               "Pacific Blues recipe by Fuji X Weekly (Classic Negative base)",
+               "Deep blue sea and sky, warm skin, strong grain. Made for beach days.",
+               contrast=1.05, latitude=1.25, crossover=(0.04, -0.02, -0.06),
+               gain=(1.02, 1.0, 0.96), saturation=1.15, fade=0.02,
+               shadow_tint=(-0.01, 0.0, 0.015), grain=0.032, grain_size=1.6,
+               tags=("recipe",)))
+_add(FilmStock("portra400v2", "Portra 400 v2", "color", 400,
+               "Kodak Portra 400 v2 recipe by Fuji X Weekly (Classic Chrome base)",
+               "Warm Portra leaning yellow-green, soft shadows, visible grain.",
+               contrast=0.88, latitude=1.2, crossover=(-0.04, -0.02, 0.1),
+               gain=(1.03, 1.01, 0.88), saturation=0.98, fade=0.025,
+               highlight_tint=(0.01, 0.012, -0.008), grain=0.026, grain_size=1.0,
+               tags=("recipe",)))
+
+
 def get(stock_id: str) -> FilmStock:
     try:
         return STOCKS[stock_id.lower()]
     except KeyError:
-        raise KeyError(f"unknown stock '{stock_id}'. Run `xsi stocks` to list them.") from None
+        raise KeyError(f"unknown stock '{stock_id}'. Run `kfilm films` to list them.") from None

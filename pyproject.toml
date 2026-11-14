@@ -3,21 +3,22 @@ requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "xsi-darkroom"
-version = "0.1.0"
-description = "Film-camera workflow and film simulation for the Canon EOS 450D / Rebel XSi"
+name = "k-film"
+version = "0.2.0"
+description = "Shoot a Canon EOS 450D like a film camera: 100+ films, Fujifilm recipes, M-Film films and Darkrooms rolls"
 readme = "README.md"
-license = { text = "MIT" }
+license = { text = "GPL-2.0-only" }
 authors = [{ name = "Prakit Lawlertratana" }]
 requires-python = ">=3.9"
 dependencies = ["numpy>=1.21", "pillow>=9.0", "rawpy>=0.18"]
-keywords = ["canon", "450d", "rebel xsi", "film simulation", "raw", "photography"]
+keywords = ["k-film", "m-film", "canon", "450d", "rebel xsi", "film simulation", "raw", "photography"]
 
 [project.optional-dependencies]
 dev = ["pytest"]
 
 [project.scripts]
-xsi = "xsi_darkroom.cli:main"
+kfilm = "kfilm.cli:main"
+xsi = "kfilm.cli:main"
 
 [tool.setuptools]
-packages = ["xsi_darkroom"]
+packages = ["kfilm"]

@@ -6,7 +6,6 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-from .stocks import FilmStock
 
 
 def _font(size: int):
@@ -32,7 +31,7 @@ def light_leak(img: Image.Image, seed: int, strength: float = 0.8) -> Image.Imag
     return Image.fromarray((np.clip(a, 0, 1) * 255).astype(np.uint8))
 
 
-def contact_sheet(prints: list[Path], stock: FilmStock, out: Path,
+def contact_sheet(prints: list[Path], stock, out: Path,
                   per_row: int = 6, thumb_w: int = 300) -> Path:
     thumb_h = int(thumb_w * 2 / 3)          # 3:2 like the 450D and 35 mm
     gap = 14

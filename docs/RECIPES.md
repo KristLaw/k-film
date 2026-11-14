@@ -4,7 +4,7 @@ Popular Fujifilm "recipes" are lists of in-camera JPEG settings that make a
 look. The 450D has no Fujifilm settings, so each recipe here comes two ways:
 
 1. **On the computer (best):** shoot RAW, develop with the stock id, e.g.
-   `xsi load summerchrome --card /Volumes/EOS_DIGITAL`.
+   `kfilm load summerchrome`.
 2. **In the camera (JPEG):** a Picture Style + White Balance Shift card you
    dial into the 450D. Quick, but a rough approximation.
 
@@ -15,7 +15,7 @@ an exact match. Please send test shots so they can be tuned.
 
 ## How the translation works
 
-| Fujifilm setting | What it does | 450D in-camera equivalent | XSi Darkroom parameter |
+| Fujifilm setting | What it does | 450D in-camera equivalent | K-Film parameter |
 |---|---|---|---|
 | Film Simulation | base colour | Picture Style base (Standard / Neutral / Faithful) | `crossover`, `saturation` |
 | White Balance shift (Red +, Blue −) | warmer/cooler | **WB-SHIFT/BKT**: Blue −N ≈ **A** (amber), Red +N ≈ a little **M** | `gain` |
@@ -129,6 +129,85 @@ No published source for a recipe called "Ronan's Neg" could be found
 (November 2026). If you have the link or the settings, open an issue and it
 will be added here and as a stock.
 
+
+## 7. Kodachrome 64 → `kodachrome64r`
+*By Fuji X Weekly, its most-viewed recipe. Punchy, warm, deep shadows.*
+(For M-Film's Kodachrome 64 LUT film, use `kodachrome64`.)
+
+| Fujifilm original (X-Trans V) | |
+|---|---|
+| Film Simulation | Classic Chrome |
+| Grain | Weak, Small |
+| Color Chrome Effect / FX Blue | Strong / Off |
+| White Balance | Daylight, R +2, B −5 |
+| Dynamic Range | DR200 |
+| Highlight / Shadow | 0 / +0.5 |
+| Color | +2 |
+| Sharpness / NR / Clarity | +1 / −4 / +3 |
+| Exposure comp. | 0 to +⅔ |
+
+**450D card:** Picture Style = Standard, Sharpness 4, Contrast +1,
+Saturation +1, Color tone 0 · WB **Daylight**, shift **A4 M1** · ISO 100.
+
+## 8. CineStill 800T → `cinestill800tr`
+*By Fuji X Weekly. Cool teal nights, glowing lights.*
+(For M-Film's CineStill 800T film, use `cinestill800t`.)
+
+| Fujifilm original (X-Trans V) | |
+|---|---|
+| Film Simulation | Eterna |
+| Grain | Strong, Large |
+| Color Chrome Effect / FX Blue | Strong / Weak |
+| White Balance | Fluorescent 3, R −6, B −4 |
+| Dynamic Range | DR400 |
+| Highlight / Shadow | 0 / +2 |
+| Color | +4 |
+| Sharpness / NR / Clarity | −3 / −4 / −5 |
+| Exposure comp. | −⅓ to +⅔ |
+
+**450D card:** Picture Style = Neutral, Sharpness 1, Contrast 0,
+Saturation +2, Color tone 0 · WB **Tungsten** (outdoors at night), shift
+**B2 G1** · Highlight Tone Priority **On** · ISO 800–1600.
+
+## 9. Pacific Blues → `pacificblues`
+*By Fuji X Weekly, after Lucy Laucht's "Positano Blues". Deep blue sea and sky.*
+
+| Fujifilm original (X-Trans V) | |
+|---|---|
+| Film Simulation | Classic Negative |
+| Grain | Strong, Large |
+| Color Chrome Effect / FX Blue | Strong / Weak |
+| White Balance | 5800K, R +1, B −3 |
+| Dynamic Range | DR400 |
+| Highlight / Shadow | −2 / +3 |
+| Color | +4 |
+| Sharpness / NR / Clarity | −2 / −4 / −3 |
+| Exposure comp. | +⅔ to +1 |
+
+**450D card:** Picture Style = Standard, Sharpness 2, Contrast +1,
+Saturation +2, Color tone 0 · WB **K 5800** (or Daylight), shift **A2** ·
+Highlight Tone Priority **On** · Exp. comp **+⅔** · ISO 200–400.
+
+## 10. Kodak Portra 400 v2 → `portra400v2`
+*By Fuji X Weekly (with Julien Jarry). Portra leaning yellow-green.*
+(For M-Film's Portra 400 film, use `portra400`.)
+
+| Fujifilm original (X-Trans V) | |
+|---|---|
+| Film Simulation | Classic Chrome |
+| Grain | Strong, Small |
+| Color Chrome Effect / FX Blue | Strong / Off |
+| White Balance | 5200K, R +1, B −6 |
+| Dynamic Range | DR400 |
+| Highlight / Shadow | 0 / −2 |
+| Color | +2 |
+| Sharpness / NR / Clarity | −2 / −4 / −2 |
+| Exposure comp. | +⅓ to +1 |
+
+**450D card:** Picture Style = Faithful, Sharpness 1, Contrast −1,
+Saturation 0, Color tone +1 · WB **K 5200**, shift **A5 G1** · Highlight
+Tone Priority **On** · Exp. comp **+⅔** · ISO 400.
+
 ---
 
 ## Sources
@@ -136,6 +215,10 @@ will be added here and as a stock.
 - Summer Chrome: https://filmsimrecipes.com/project/summer-chrome/
 - Fujicolor C200: https://fujixweekly.com/2021/05/13/fujifilm-x-trans-iv-film-simulation-recipe-fujicolor-c200/
 - Reggie's Portra: https://fujixweekly.com/2022/06/11/fujifilm-x-trans-iv-film-simulation-recipe-reggies-portra/
+- Kodachrome 64: https://fujixweekly.com/2022/11/28/kodachrome-64-fujifilm-x-t5-x-trans-v-film-simulation-recipe
+- CineStill 800T: https://fujixweekly.com/2024/04/16/cinestill-800t-fujifilm-x-trans-v-film-simulation-recipe/
+- Pacific Blues: https://fujixweekly.com/2022/12/06/pacific-blues-fujifilm-x-t5-x-trans-v-film-simulation-recipe/
+- Kodak Portra 400 v2: https://fujixweekly.com/2022/12/16/kodak-portra-400-v2-fujifilm-x-t5-x-trans-v-film-simulation-recipe/
 - Nostalgic Neg. / AV Americana: https://www.fujifilm-x.com/fr-ca/stories/nostalgic-neg-fs-recipe-x-av-schofield/
 
 Recipe names belong to their creators; credit them when you share photos.

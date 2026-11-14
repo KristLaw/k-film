@@ -67,7 +67,7 @@ the most useful realistic goal.
 The film feeling comes from three things: committing to one stock, not
 seeing your photos, and getting a whole roll back at once. All three work
 without touching the camera's firmware, with zero risk to the camera. That
-is what XSi Darkroom does.
+is what K-Film does.
 
 ## Sources
 

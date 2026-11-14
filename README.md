@@ -1,127 +1,140 @@
-# XSi Darkroom 🎞️
+# K-Film 🎞️
 
 **Shoot your Canon EOS 450D (Rebel XSi / Kiss X2) like a film camera.**
 
-Load a roll of film, shoot without looking at the screen, then develop the
-whole roll at once into film-look prints and a contact sheet.
+Load a roll, shoot without looking at the screen, then develop the whole roll
+at once into film prints and a contact sheet. Pick from **98 films**:
 
-Inspired by [M-Film](https://github.com/HNGSeries/mfilm-canon-film-simulation),
-which does this *inside* the camera on Magic Lantern bodies. The 450D can't
-run M-Film (see [why](docs/PORTING-450D.md)), so XSi Darkroom does the same
-idea from your computer: the camera shoots RAW, the "roll" lives as a small
-file on the SD card, and the darkroom runs on your PC.
+- **26 K-Film films**, among them 9 popular Fujifilm recipes (Summer Chrome,
+  Reggie's Portra, Pacific Blues, Kodachrome 64...) with 450D camera settings
+- **all 72 films of [M-Film](https://github.com/HNGSeries/mfilm-canon-film-simulation)**,
+  developed with M-Film's own film model and the Film-Luts colours
+- rolls that **M-Film's Darkrooms app can open**, straight from a 450D card
 
-![contact sheet](docs/img/contact_sheet_demo.jpg)
+![films](docs/img/mfilm_demo.jpg)
+
+## Why the 450D needs this
+
+M-Film turns newer Canons (500D, 550D, 650D...) into film cameras by running
+Magic Lantern inside the camera. The 450D is older (DIGIC III, VxWorks), so
+M-Film can't run on it ([why](docs/PORTING-450D.md)).
+**Never copy an M-Film camera zip onto a 450D card**: it is built for one
+other camera and firmware.
+
+K-Film does the film part on your computer instead. Your camera is never
+changed. The camera just shoots RAW, the "roll" is a small file on the SD
+card, and the darkroom runs on your Mac or PC.
 
 ## How it works
 
-| Step | Film camera | XSi Darkroom |
+| Step | Film camera | K-Film |
 |---|---|---|
-| 1 | Pick a film, load it | `xsi load studio400 --card E:\` |
-| 2 | Set the ISO from the box | Set the 450D to the ISO it tells you |
-| 3 | Shoot 36 frames, no preview | Shoot RAW with **Review time: Off** |
-| 4 | Rewind (realistic mode) | `xsi rewind --card E:\` |
-| 5 | Develop at the lab | `xsi develop --card E:\` → prints + contact sheet |
+| 1 | Pick a film, load it | `kfilm load portra400` |
+| 2 | Set the ISO from the box | set the 450D to the ISO it tells you |
+| 3 | Shoot, no preview | Quality **RAW**, Review time **Off** |
+| 4 | Rewind (realistic mode) | `kfilm rewind` |
+| 5 | Develop at the lab | `kfilm develop` (prints + contact sheet) or open **Darkrooms** |
 
-Everything you shot before loading the roll is ignored, RAW+JPEG pairs count
-as one frame, and shots taken after the roll ran out are not developed.
+Everything on the card from before you loaded the roll is ignored. RAW+JPEG
+pairs count as one frame, and shots after the roll ran out aren't developed.
+With one card in, K-Film finds it by itself; otherwise add `--card /Volumes/EOS_DIGITAL`.
 
 ## Install
 
 Requires Python 3.9+.
 
 ```bash
-git clone https://github.com/KristLaw/xsi-darkroom.git
-cd xsi-darkroom
+git clone https://github.com/KristLaw/k-film.git
+cd k-film
 pip install .
+kfilm getluts        # once: the colours for the M-Film films (~40 MB)
 ```
 
 ## Quick start
 
 ```bash
-xsi stocks                                  # list the 22 film stocks
-xsi load cine800t --card /Volumes/EOS_DIGITAL --frames 24
-# ...go shoot 24 frames on the 450D...
-xsi status  --card /Volumes/EOS_DIGITAL     # 24/24 exposed
-xsi develop --card /Volumes/EOS_DIGITAL --size large
+kfilm films                       # all 98 films
+kfilm films --shelf recipes       # just the Fujifilm-recipe looks
+kfilm load reggieportra --frames 24
+# ...shoot 24 frames on the 450D...
+kfilm status                      # 24/24 exposed
+kfilm develop --size large        # prints land in KFILM/PRINTS on the card
 ```
-
-Prints land in `XSIROLL/PRINTS/` on the card (or `--out somewhere`).
 
 ### Camera settings (450D)
 
-- **Quality:** RAW (or RAW+L). The darkroom uses the RAW.
+- **Quality:** RAW (or RAW+L). The darkroom develops the RAW.
 - **Review time:** Off (Shooting menu 1). This is what makes it feel like film.
-- **ISO:** what `xsi load` prints. Push +1 → ISO doubles.
-- **Picture Style:** anything; it does not affect RAW development.
-- **Firmware:** any. XSi Darkroom never touches the camera.
+- **ISO:** what `kfilm load` prints. Push +1 → ISO doubles.
+- **Picture Style:** anything; it doesn't change the RAW. (If you also want
+  JPEGs with the look, use the in-camera cards in [docs/RECIPES.md](docs/RECIPES.md).)
+- **Firmware:** any. K-Film never touches the camera.
 
-### Modes
+## Develop with Darkrooms (M-Film's app)
 
-- `--mode basic`: the roll is done when you hit the last frame.
-- `--mode realistic`: you must `xsi rewind` before developing. `xsi open-back`
-  simulates opening the back mid-roll: the last frames get light leaks.
-  Loading a new roll over an unrewound one ruins it.
+Every roll also writes `DCIM/100CANON/ROLL_nnn.TXT`, the same roll log an
+M-Film camera writes, so **Darkrooms** shows your 450D rolls on its shelf.
+Run `kfilm status` (or `kfilm sync`) after shooting so the log lists the new
+frames, then open Darkrooms with the card in. Details: [docs/DARKROOMS.md](docs/DARKROOMS.md).
+
+## Films
+
+| Shelf | Films |
+|---|---|
+| **Recipes** (Fujifilm recipes → 450D) | `summerchrome` · `leicax` · `fuji200` · `reggieportra` · `nostalgicneg` · `kodachrome64r` · `cinestill800tr` · `pacificblues` · `portra400v2` |
+| **K-Film** colour | `studio160` · `studio400` · `sun200` · `street400` · `city400` · `pastel400` · `cine800t` · `cine50d` |
+| **K-Film** slide / B&W | `vivid50` · `true100` · `chrome100` · `grit400` · `soft400` · `fine100` · `red25` · `night3200` · `sepia200` |
+| **M-Film** (72) | `portra400` · `cinestill800t` · `ektar100` · `gold200` · `superia400` · `velvia50` · `hp5` · `trix400` · `kodachrome64` · `kodak2383` · ... (`kfilm films`) |
+
+Recipe settings, their creators and sources: [docs/RECIPES.md](docs/RECIPES.md).
 
 ### Extras
 
 ```bash
-xsi load grit400 --card E:\ --push 1      # shoot Tri-X style at 800, push-process
-xsi develop --card E:\ --stock vivid50    # cross-process into a different stock
-xsi print studio160 IMG_0042.CR2          # one-off print, no roll
-xsi hald --out my_look.png                # neutral HaldCLUT to grade yourself
-xsi develop --card E:\ --lut my_look.png  # apply a HaldCLUT after the film curve
+kfilm load trix400 --push 1           # shoot at 800, push-process
+kfilm develop --film velvia50         # cross-process into another film
+kfilm load portra400 --mode realistic # rewind before developing; `kfilm open-back` = light leaks
+kfilm print kodak2383 IMG_0042.CR2    # one-off print, no roll
+kfilm hald --out my_look.png          # neutral HaldCLUT to grade your own look
+kfilm develop --lut my_look.png
 ```
 
-## Film stocks
-
-| Colour negative | Slide | Black & white |
-|---|---|---|
-| `studio160` · `studio400` · `sun200` · `street400` · `city400` · `pastel400` · `cine800t` · `cine50d` | `vivid50` · `true100` · `chrome100` | `grit400` · `soft400` · `fine100` · `red25` · `night3200` · `sepia200` |
-
-**Community recipes** (translated from popular Fujifilm recipes, with 450D in-camera
-settings too): `summerchrome` · `leicax` · `fuji200` · `reggieportra` · `nostalgicneg`.
-See [docs/RECIPES.md](docs/RECIPES.md).
-
-Each stock is an original parametric model (tone curve, colour crossover,
-saturation, fade, split tone, grain, halation) in
-[`xsi_darkroom/stocks.py`](xsi_darkroom/stocks.py). They aim for the general
-character of famous films, not an exact match. Add your own by adding a
-`FilmStock(...)` line. Pull requests with new stocks are welcome.
-
-![stocks](docs/img/stocks_demo.jpg)
-*Test chart: Studio 400, Cine 800T, Vivid 50 / Grit 400, Sun 200, Pastel 400.*
+The old `xsi` command still works, and cards with an XSi Darkroom 0.1 roll
+(`XSIROLL/`) are read as before.
 
 ## Project layout
 
 ```
-xsi_darkroom/
-  stocks.py    film stock models
-  process.py   RAW decode (LibRaw via rawpy) + film pipeline
-  roll.py      roll state on the SD card (XSIROLL/ROLL.JSON)
-  contact.py   contact sheets, light leaks
-  hald.py      optional HaldCLUT support
-  cli.py       the `xsi` command
-docs/PORTING-450D.md   research: running M-Film inside the 450D
-docs/RECIPES.md        film recipes + 450D camera settings
-tests/                 pytest suite
+kfilm/
+  films.py          one shelf for every film (both engines)
+  stocks.py         K-Film films and recipe translations
+  process.py        RAW decode (LibRaw via rawpy) + K-Film engine
+  mfilm.py          M-Film's lab model, ported to numpy
+  mfilm_films.py    M-Film's film list (from M-Film, GPL-2.0)
+  mfilm_filmluts.py the 63 Film-Luts films (from M-Film)
+  lut.py            .cube LUT reader (from M-Film)
+  darkrooms.py      roll logs for Darkrooms, EXIF reader
+  roll.py · card.py · contact.py · hald.py · cli.py
+docs/  RECIPES.md · DARKROOMS.md · PORTING-450D.md
 ```
 
 ## Roadmap
 
-- [x] Roll workflow, 17 stocks, contact sheet, push/pull, HaldCLUT
-- [x] 5 community recipes + 450D in-camera cards ([docs/RECIPES.md](docs/RECIPES.md))
-- [ ] Tune stocks against real 450D CR2 files (needs sample rolls!)
-- [ ] Simple GUI (drag in the card, pick a stock)
+- [x] Roll workflow, contact sheet, push/pull, HaldCLUT
+- [x] 9 Fujifilm recipes + 450D in-camera cards
+- [x] M-Film's 72 films and Darkrooms rolls
+- [ ] Tune the films on real 450D CR2s (sample rolls welcome!)
+- [ ] A simple app window (drag in the card, pick a film)
 - [ ] Printable film-box cards for the camera's back
-- [ ] Research: in-camera port, see [docs/PORTING-450D.md](docs/PORTING-450D.md)
 
 ## Credits & licence
 
-MIT licence, see [LICENSE](LICENSE). Written from scratch; no code from M-Film
-or Magic Lantern is included. RAW decoding by [LibRaw](https://www.libraw.org/)
-through [rawpy](https://github.com/letmaik/rawpy).
+GPL-2.0 ([LICENSE](LICENSE)), because K-Film includes code and film data from
+**M-Film** by HNGSeries (GPL-2.0). Film colours: **Film-Luts** by Yahia Angelo
+(MIT), downloaded by `kfilm getluts`, not shipped here. RAW decoding:
+[LibRaw](https://www.libraw.org/) through [rawpy](https://github.com/letmaik/rawpy).
+See [THIRD_PARTY.md](THIRD_PARTY.md).
 
-Not affiliated with Canon, Kodak, Fujifilm, Ilford, CineStill or the M-Film
-project. Film names in `inspired_by` describe a look; they are trademarks of
-their owners.
+Recipe names belong to their creators. Film names describe a look; they are
+trademarks of their owners. Not affiliated with Canon, Kodak, Fujifilm,
+Ilford, CineStill or the M-Film project.

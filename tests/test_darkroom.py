@@ -5,11 +5,11 @@ import numpy as np
 import pytest
 from PIL import Image
 
-from xsi_darkroom import cli
-from xsi_darkroom.hald import HaldCLUT, identity_hald
-from xsi_darkroom.process import develop, film_curve
-from xsi_darkroom.roll import Roll
-from xsi_darkroom.stocks import STOCKS
+from kfilm import cli
+from kfilm.hald import HaldCLUT, identity_hald
+from kfilm.process import develop, film_curve
+from kfilm.roll import Roll
+from kfilm.stocks import STOCKS
 
 
 def _shot(folder, n, color=(120, 140, 160)):
@@ -57,7 +57,7 @@ def test_roll_workflow(card, capsys):
     r = Roll.load(card)
     assert len(r.shots(card)) == 4                        # old photo excluded
     cli.main(["develop", "--card", str(card), "--size", "screen"])
-    out = list((card / "XSIROLL" / "PRINTS").rglob("*.jpg"))
+    out = list((card / "KFILM" / "PRINTS").rglob("*.jpg"))
     assert len(out) == 5                                  # 4 prints + contact sheet
     assert Roll.load(card) is None                        # archived after developing
 
