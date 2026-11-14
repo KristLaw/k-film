@@ -96,6 +96,9 @@ def cmd_load(a):
     frames = a.frames or film.frames
     dr = "" if a.no_darkrooms else (a.darkrooms_film or film.darkrooms_key or "")
     r = new_roll(card, film.id, frames, a.mode, a.push, darkrooms=dr)
+    if not (roll_dir(card) / "README.TXT").exists():
+        from .cardkit import build
+        build(card)
     push = f", pushed {a.push:+g}" if a.push else ""
     print(f"Loaded {film.name} (ISO {film.iso}{push}), {frames} exposures, {r.mode} mode.")
     print(f"Set your 450D to {_iso_text(film.iso, a.push)}, Quality RAW, Review time Off. Happy shooting.")
@@ -222,6 +225,20 @@ def cmd_hald(a):
     print(f"Neutral HaldCLUT written to {a.out}. Grade it in any editor, then use --lut.")
 
 
+def cmd_card(a):
+    """Put the K-Film folder (guide, shelf, settings) on the card."""
+    from .cardkit import build, build_zip
+    if a.zip:
+        import tempfile
+        with tempfile.TemporaryDirectory() as tmp:
+            print(f"Card zip: {build_zip(Path(a.zip), Path(tmp))}")
+        return
+    card = Path(a.out) if a.out else find_card(a.card)
+    k = build(card)
+    print(f"K-Film folder ready: {k}")
+    print("  README.TXT, FILMS.TXT, SHELF.PNG and SHELF/ (one box per film)")
+
+
 def cmd_getluts(a):
     """Fetch the Film-Luts LUTs (MIT, by Yahia Angelo) the M-Film films use."""
     from .mfilm import lut_dir
@@ -326,6 +343,12 @@ def main(argv=None):
     p.add_argument("--level", type=int, default=8)
     p.add_argument("--out", default="identity_hald.png")
     p.set_defaults(fn=cmd_hald)
+
+    p = sub.add_parser("card", help="put the K-Film folder (guide + film shelf) on the SD card")
+    card_arg(p)
+    p.add_argument("--out", help="write it into this folder instead of a card")
+    p.add_argument("--zip", help="make K-Film-card-450D.zip instead")
+    p.set_defaults(fn=cmd_card)
 
     p = sub.add_parser("getluts", help="download the Film-Luts colours for the M-Film films (once)")
     p.add_argument("--from", dest="source", help="a Film-Luts clone you already have")

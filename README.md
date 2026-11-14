@@ -52,6 +52,28 @@ pip install .
 kfilm getluts        # once: the colours for the M-Film films (~40 MB)
 ```
 
+## The card folder
+
+Like M-Film's card zip, K-Film has a folder for the SD card. The 450D can't
+run programs from a card, so it holds no program: it carries your **film
+shelf**, the 450D settings for every film and a short guide, and K-Film keeps
+the loaded roll in it.
+
+```
+KFILM/
+  README.TXT      how to shoot a roll
+  FILMS.TXT       every film: ISO + Picture Style + WB for the 450D
+  SHELF.PNG       all 98 films on one page (pixel film boxes)
+  SHELF/*.PNG     one box per film
+  ROLL.JSON       the loaded roll (kfilm load)
+```
+
+`kfilm card` puts it on the card (`kfilm load` does too, the first time),
+or download **K-Film-card-450D.zip** from the
+[releases](https://github.com/KristLaw/k-film/releases) and unzip it at the
+top of the card, next to `DCIM`. The camera ignores it. Formatting the card
+in the camera erases it: run `kfilm card` again.
+
 ## Quick start
 
 ```bash

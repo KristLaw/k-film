@@ -105,3 +105,16 @@ def test_pixel_font_and_sheet(tmp_path):
     im = Image.new("RGB", (200, 20))
     assert pf.draw(im, (0, 0), "K-FILM", 2) == pf.width("K-FILM", 2) + 2
     assert im.getbbox() is not None
+
+
+def test_card_folder_keeps_the_roll(tmp_path):
+    cli.main(["load", "portra400", "--card", str(tmp_path)])
+    roll = (tmp_path / "KFILM" / "ROLL.JSON").read_text()
+    cli.main(["card", "--card", str(tmp_path)])
+    k = tmp_path / "KFILM"
+    assert (k / "ROLL.JSON").read_text() == roll
+    assert (k / "README.TXT").exists() and (k / "SHELF.PNG").exists()
+    assert len(list((k / "SHELF").glob("*.PNG"))) == len(all_films())
+    assert "portra400" in (k / "FILMS.TXT").read_text()
+    _shot(tmp_path / "DCIM" / "100CANON", 1)
+    assert len(Roll.load(tmp_path).shots(tmp_path)) == 1          # shelf PNGs aren't frames
