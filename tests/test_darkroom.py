@@ -42,8 +42,8 @@ def test_bw_is_neutral():
     assert np.allclose(y[..., 0], y[..., 1], atol=1e-5)
 
 
-def test_identity_hald_is_identity():
-    lut_path = "/tmp/_id_hald.png"
+def test_identity_hald_is_identity(tmp_path):
+    lut_path = tmp_path / "_id_hald.png"
     identity_hald(8).save(lut_path)
     lut = HaldCLUT(lut_path)
     y = np.random.default_rng(2).random((10, 10, 3)).astype(np.float32)
