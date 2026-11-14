@@ -9,7 +9,7 @@ description = "Shoot a Canon EOS 450D like a film camera: 100+ films, Fujifilm r
 readme = "README.md"
 license = { text = "GPL-2.0-only" }
 authors = [{ name = "Prakit Lawlertratana" }]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = ["numpy>=1.21", "pillow>=9.0", "rawpy>=0.18"]
 keywords = ["k-film", "m-film", "canon", "450d", "rebel xsi", "film simulation", "raw", "photography"]
 

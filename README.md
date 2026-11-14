@@ -41,7 +41,7 @@ With one card in, K-Film finds it by itself; otherwise add `--card /Volumes/EOS_
 
 ## Install
 
-Requires Python 3.9+.
+Requires Python 3.10+.
 
 ```bash
 git clone https://github.com/KristLaw/k-film.git
