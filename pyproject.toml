@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "k-film"
-version = "0.2.0"
+version = "0.3.0"
 description = "Shoot a Canon EOS 450D like a film camera: 100+ films, Fujifilm recipes, M-Film films and Darkrooms rolls"
 readme = "README.md"
 license = { text = "GPL-2.0-only" }
@@ -22,3 +22,6 @@ xsi = "kfilm.cli:main"
 
 [tool.setuptools]
 packages = ["kfilm"]
+
+[tool.setuptools.package-data]
+kfilm = ["data/*.jpg"]

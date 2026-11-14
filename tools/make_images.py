@@ -14,7 +14,7 @@ from PIL import Image, ImageDraw
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from kfilm import mfilm, pixelfont as pf               # noqa: E402
-from kfilm.contact import AMBER, AMBER_DARK, CREAM, INK, MUTED, contact_sheet  # noqa: E402
+from kfilm.contact import AMBER, CREAM, INK, contact_sheet  # noqa: E402
 from kfilm.films import get                            # noqa: E402
 from kfilm.process import develop, srgb_to_linear, to_image  # noqa: E402
 
@@ -36,34 +36,21 @@ def print_of(film_id, lin, seed=1):
 
 
 def banner():
-    """Pixel-art banner, drawn at 1/5 size and blown up with hard edges."""
-    s = 5
-    w, h = 240, 64
-    im = Image.new("RGB", (w, h), INK)
+    """Pixel-art banner: the KARAFILM name and four canisters on the shelf."""
+    from kfilm import art
+    w, h, s = 480, 104, 3
+    im = Image.new("RGB", (w, h), art.BG)
     d = ImageDraw.Draw(im)
-    # canister
-    d.rectangle([9, 12, 22, 14], fill=MUTED)
-    d.rectangle([6, 15, 25, 46], fill=AMBER)
-    d.rectangle([6, 25, 25, 33], fill=INK)
-    pf.draw(im, (7, 26), "400", 1, AMBER)
-    d.rectangle([9, 47, 22, 49], fill=MUTED)
-    # film leader running right, with frames in film colours
-    d.rectangle([26, 36, 234, 52], fill=(40, 31, 22))
-    for x in range(28, 234, 4):
-        d.rectangle([x, 37, x + 1, 38], fill=INK)
-        d.rectangle([x, 50, x + 1, 51], fill=INK)
-    swatch = [(214, 150, 110), (64, 110, 170), (232, 190, 70), (70, 140, 90),
-              (190, 70, 60), (150, 150, 150), (90, 170, 190), (220, 120, 60)]
-    for i, c in enumerate(swatch):
-        x = 36 + i * 25
-        d.rectangle([x, 40, x + 20, 48], fill=c)
-    pf.draw(im, (32, 7), "K-FILM", 3, AMBER, shadow=AMBER_DARK)
-    pf.draw(im, (154, 8), "SHOOT YOUR", 1, CREAM)
-    pf.draw(im, (154, 17), "CANON 450D", 1, CREAM)
-    pf.draw(im, (154, 26), "LIKE FILM", 1, AMBER)
-    pf.draw(im, (186, 55), "98 FILMS", 1, MUTED)
-    im = im.resize((w * s, h * s), Image.NEAREST)
-    im.save(IMG / "kfilm_banner.png")
+    d.rectangle([0, 92, w, h], fill=art.BG_DARK)
+    pf.draw(im, (14, 14), art.BRAND, 4, art.OUTLINE)
+    pf.draw(im, (16, 48), "SHOOT YOUR CANON 450D LIKE FILM", 1, (70, 70, 76))
+    pf.draw(im, (16, 58), "98 FILMS · RECIPES · M-FILM", 1, (110, 60, 170))
+    picks = ["reggieportra", "portra400", "velvia50", "trix400"]
+    for i, fid in enumerate(picks):
+        can = art.canister(get(fid), leader=(i == len(picks) - 1))
+        d.rectangle([236 + i * 50, 96, 282 + i * 50, 99], fill=(160, 160, 168))
+        im.paste(can, (230 + i * 50, 8), can)
+    im.resize((w * s, h * s), Image.NEAREST).save(IMG / "kfilm_banner.png")
 
 
 def film_grid():

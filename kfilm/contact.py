@@ -34,7 +34,7 @@ def pixel_logo(img: Image.Image, xy, scale: int = 4) -> int:
     d.rectangle([x, y + 3 * s, x + 5 * s - 1, y + 4 * s - 1], fill=INK)
     d.rectangle([x + s, y + 7 * s, x + 4 * s - 1, y + 8 * s - 1], fill=MUTED)
     d.rectangle([x + 5 * s, y + 5 * s, x + 8 * s - 1, y + 7 * s - 1], fill=AMBER_DARK)
-    return pf.draw(img, (x + 10 * s, y + s // 2), "K-FILM", s, AMBER, shadow=AMBER_DARK)
+    return pf.draw(img, (x + 10 * s, y + s // 2), "KARAFILM", s, AMBER, shadow=AMBER_DARK)
 
 
 def light_leak(img: Image.Image, seed: int, strength: float = 0.8) -> Image.Image:
@@ -55,7 +55,7 @@ def light_leak(img: Image.Image, seed: int, strength: float = 0.8) -> Image.Imag
 
 def contact_sheet(prints: list[Path], stock, out: Path,
                   per_row: int = 6, thumb_w: int = 300) -> Path:
-    """A sheet of film strips with the K-FILM label, in the pixel style."""
+    """A sheet of film strips with the KARAFILM label, in the pixel style."""
     thumb_w = _snap(thumb_w)
     thumb_h = _snap(int(thumb_w * 2 / 3))  # 3:2 like the 450D and 35 mm
     gap = 4 * CELL
@@ -92,7 +92,7 @@ def contact_sheet(prints: list[Path], stock, out: Path,
             sheet.paste(im, (ox, oy))
             pf.draw(sheet, (x, y0 + strip_h - 10 * CELL), f"{i + 1}", 2, edge)
             pf.draw(sheet, (x + 9 * CELL, y0 + strip_h - 10 * CELL), f"> {i + 1}A", 2, edge)
-            pf.draw(sheet, (x, y0 + 6 * CELL), f"K-FILM {stock.id.upper()} {stock.iso}", 2, edge)
+            pf.draw(sheet, (x, y0 + 6 * CELL), f"KARAFILM {stock.id.upper()} {stock.iso}", 2, edge)
     out = Path(out)
     out.parent.mkdir(parents=True, exist_ok=True)
     sheet.save(out, quality=92)

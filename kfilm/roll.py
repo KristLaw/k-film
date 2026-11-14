@@ -102,7 +102,8 @@ def scan_card(card: Path) -> list[Path]:
     dcim = Path(card) / "DCIM"
     root = dcim if dcim.exists() else Path(card)
     return [p for p in root.rglob("*") if p.is_file() and p.suffix.lower() in PHOTO_EXT
-            and ROLL_DIR not in p.parts and LEGACY_DIR not in p.parts]
+            and ROLL_DIR not in p.parts and LEGACY_DIR not in p.parts
+            and not p.name.upper().startswith("KFLM")]     # Karafilm shelf pages
 
 
 def _key(card: Path, p: Path) -> str:

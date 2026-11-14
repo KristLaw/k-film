@@ -1,6 +1,8 @@
-![K-FILM](docs/img/kfilm_banner.png)
+![KARAFILM](docs/img/kfilm_banner.png)
 
-# K-Film 🎞️
+# Karafilm 🎞️
+
+*(the project is `k-film`, the command is `kfilm`)*
 
 **Shoot your Canon EOS 450D (Rebel XSi / Kiss X2) like a film camera.**
 
@@ -52,19 +54,36 @@ pip install .
 kfilm getluts        # once: the colours for the M-Film films (~40 MB)
 ```
 
+## The shelf on the camera
+
+M-Film shows a film shelf on the camera screen. The 450D can't run M-Film,
+but it can show photos, so Karafilm puts the shelf on the card **as photos**:
+one pixel-art page per film, with its canister, a sample print and what to
+set on the 450D. Press **PLAY** and turn the dial.
+
+![shelf](docs/img/shelf_demo.png)
+
+They are `DCIM/100CANON/KFLM0001.JPG` to `KFLM0099.JPG`: proper Canon
+DCF files (Exif, 160×120 thumbnail, 2256×1504 like the 450D's S size), with
+low numbers so your camera's own file numbers carry on after your photos.
+Karafilm never counts them as frames of a roll. With an M-Film camera folder
+on the computer (e.g. `/Applications/M-Film-camera-550D.109`), the M-Film
+films' pages use M-Film's own sample photos; otherwise the test chart.
+
 ## The card folder
 
-Like M-Film's card zip, K-Film has a folder for the SD card. The 450D can't
-run programs from a card, so it holds no program: it carries your **film
-shelf**, the 450D settings for every film and a short guide, and K-Film keeps
-the loaded roll in it.
+Like M-Film's card zip, Karafilm has a folder for the SD card. The 450D can't
+run programs from a card, so it holds no program: it carries the shelf pages
+above, the 450D settings for every film and a short guide, and keeps the
+loaded roll.
 
 ```
+DCIM/100CANON/KFLM*.JPG   the shelf for the camera's Playback
 KFILM/
   README.TXT      how to shoot a roll
   FILMS.TXT       every film: ISO + Picture Style + WB for the 450D
-  SHELF.PNG       all 98 films on one page (pixel film boxes)
-  SHELF/*.PNG     one box per film
+  SHELF.PNG       all 98 canisters on one page
+  SHELF/*.PNG     one canister per film
   ROLL.JSON       the loaded roll (kfilm load)
 ```
 
@@ -147,7 +166,10 @@ kfilm/
   lut.py            .cube LUT reader (from M-Film)
   darkrooms.py      roll logs for Darkrooms, EXIF reader
   camera450d.py     what to dial into the 450D for each film
-  pixelfont.py      K-Film's 5x7 pixel font (drawn in code)
+  pixelfont.py      the 5x7 pixel font (drawn in code)
+  art.py            Karafilm pixel art: canisters, camera shelf pages
+  dcf.py            Canon-style JPEGs the 450D can play back
+  cardkit.py        the card folder and camera shelf
   roll.py · card.py · contact.py · hald.py · cli.py
 tools/make_images.py   rebuilds the README pictures
 docs/  RECIPES.md · DARKROOMS.md · PORTING-450D.md

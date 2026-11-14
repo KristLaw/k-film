@@ -110,7 +110,7 @@ def test_pixel_font_and_sheet(tmp_path):
 def test_card_folder_keeps_the_roll(tmp_path):
     cli.main(["load", "portra400", "--card", str(tmp_path)])
     roll = (tmp_path / "KFILM" / "ROLL.JSON").read_text()
-    cli.main(["card", "--card", str(tmp_path)])
+    cli.main(["card", "--card", str(tmp_path), "--samples", str(tmp_path / "none")])
     k = tmp_path / "KFILM"
     assert (k / "ROLL.JSON").read_text() == roll
     assert (k / "README.TXT").exists() and (k / "SHELF.PNG").exists()
@@ -118,3 +118,18 @@ def test_card_folder_keeps_the_roll(tmp_path):
     assert "portra400" in (k / "FILMS.TXT").read_text()
     _shot(tmp_path / "DCIM" / "100CANON", 1)
     assert len(Roll.load(tmp_path).shots(tmp_path)) == 1          # shelf PNGs aren't frames
+
+
+def test_camera_shelf_pages_are_canon_dcf(tmp_path):
+    from kfilm.cardkit import build
+    from PIL import ExifTags
+    build(tmp_path, samples=tmp_path / "none")
+    pages = sorted((tmp_path / "DCIM" / "100CANON").glob("KFLM*.JPG"))
+    assert len(pages) == len(all_films()) + 1 and pages[0].name == "KFLM0001.JPG"
+    data = pages[1].read_bytes()
+    assert data[:4] == b"\xff\xd8\xff\xe1" and data[6:10] == b"Exif"      # Exif first, no JFIF
+    im = Image.open(pages[1])
+    assert im.size == (2256, 1504) and im.getexif()[0x0110] == "Canon EOS 450D"
+    assert im.getexif().get_ifd(ExifTags.IFD.IFD1)[0x0202] > 0                # 160x120 thumbnail
+    cli.main(["load", "portra400", "--card", str(tmp_path)])
+    assert Roll.load(tmp_path).shots(tmp_path) == []                          # shelf isn't a roll

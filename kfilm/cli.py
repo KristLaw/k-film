@@ -234,9 +234,12 @@ def cmd_card(a):
             print(f"Card zip: {build_zip(Path(a.zip), Path(tmp))}")
         return
     card = Path(a.out) if a.out else find_card(a.card)
-    k = build(card)
-    print(f"K-Film folder ready: {k}")
-    print("  README.TXT, FILMS.TXT, SHELF.PNG and SHELF/ (one box per film)")
+    k = build(card, camera_shelf=not a.no_camera_shelf,
+              samples=Path(a.samples) if a.samples else None)
+    print(f"Karafilm folder ready: {k}")
+    if not a.no_camera_shelf:
+        print(f"Camera shelf: {card / 'DCIM' / '100CANON'}/KFLM0001-KFLM{len(all_films()) + 1:04d}.JPG")
+        print("  On the 450D: press PLAY and turn the dial.")
 
 
 def cmd_getluts(a):
@@ -348,6 +351,8 @@ def main(argv=None):
     card_arg(p)
     p.add_argument("--out", help="write it into this folder instead of a card")
     p.add_argument("--zip", help="make K-Film-card-450D.zip instead")
+    p.add_argument("--samples", help="M-Film's ML/SAMPLES folder (found by itself in /Applications)")
+    p.add_argument("--no-camera-shelf", action="store_true", help="don't put shelf pages in DCIM")
     p.set_defaults(fn=cmd_card)
 
     p = sub.add_parser("getluts", help="download the Film-Luts colours for the M-Film films (once)")
