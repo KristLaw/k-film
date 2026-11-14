@@ -185,7 +185,7 @@ Saturation +2, Color tone 0 · WB **Tungsten** (outdoors at night), shift
 | Exposure comp. | +⅔ to +1 |
 
 **450D card:** Picture Style = Standard, Sharpness 2, Contrast +1,
-Saturation +2, Color tone 0 · WB **K 5800** (or Daylight), shift **A2** ·
+Saturation +2, Color tone 0 · WB **Daylight** (the 450D has no Kelvin setting), shift **A2** ·
 Highlight Tone Priority **On** · Exp. comp **+⅔** · ISO 200–400.
 
 ## 10. Kodak Portra 400 v2 → `portra400v2`
@@ -205,7 +205,7 @@ Highlight Tone Priority **On** · Exp. comp **+⅔** · ISO 200–400.
 | Exposure comp. | +⅓ to +1 |
 
 **450D card:** Picture Style = Faithful, Sharpness 1, Contrast −1,
-Saturation 0, Color tone +1 · WB **K 5200**, shift **A5 G1** · Highlight
+Saturation 0, Color tone +1 · WB **Daylight** (≈5200 K), shift **A5 G1** · Highlight
 Tone Priority **On** · Exp. comp **+⅔** · ISO 400.
 
 ---

@@ -87,3 +87,21 @@ def test_mfilm_roll_develops(tmp_path):
     cli.main(["develop", "--card", str(tmp_path), "--size", "screen"])
     out = list((tmp_path / "KFILM" / "PRINTS").rglob("*.jpg"))
     assert len(out) == 3
+
+
+def test_every_film_has_450d_settings():
+    from kfilm.camera450d import settings
+    for f in all_films().values():
+        s = settings(f)
+        assert s.style in {"Standard", "Portrait", "Landscape", "Neutral", "Faithful", "Monochrome"}, f.id
+        assert s.wb in {"Auto", "Daylight", "Tungsten"}, f.id       # no Kelvin on a 450D
+        assert -4 <= s.contrast <= 4 and 0 <= s.sharpness <= 7, f.id
+    assert settings(all_films()["cinestill800t"]).wb == "Tungsten"
+
+
+def test_pixel_font_and_sheet(tmp_path):
+    from kfilm import pixelfont as pf
+    assert all(len(g) == 35 for g in pf._G.values())
+    im = Image.new("RGB", (200, 20))
+    assert pf.draw(im, (0, 0), "K-FILM", 2) == pf.width("K-FILM", 2) + 2
+    assert im.getbbox() is not None

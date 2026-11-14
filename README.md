@@ -1,3 +1,5 @@
+![K-FILM](docs/img/kfilm_banner.png)
+
 # K-Film 🎞️
 
 **Shoot your Canon EOS 450D (Rebel XSi / Kiss X2) like a film camera.**
@@ -65,10 +67,18 @@ kfilm develop --size large        # prints land in KFILM/PRINTS on the card
 
 - **Quality:** RAW (or RAW+L). The darkroom develops the RAW.
 - **Review time:** Off (Shooting menu 1). This is what makes it feel like film.
-- **ISO:** what `kfilm load` prints. Push +1 → ISO doubles.
-- **Picture Style:** anything; it doesn't change the RAW. (If you also want
-  JPEGs with the look, use the in-camera cards in [docs/RECIPES.md](docs/RECIPES.md).)
+- **ISO:** what `kfilm load` prints. Push +1 → ISO doubles. (The 450D goes
+  100–1600, 3200 as "H"; for ISO 25–64 films K-Film tells you the exposure comp.)
+- **Picture Style + white balance:** they don't change the RAW, but they make
+  the camera's own preview look like the film. `kfilm camera portra400` (and
+  `kfilm load`) says what to set: M-Film's in-camera settings for its films,
+  the recipe cards for the recipes. The 450D has no Kelvin white balance, so
+  K-Film gives Daylight or Tungsten instead.
 - **Firmware:** any. K-Film never touches the camera.
+
+Every roll ends with a contact sheet in K-Film's pixel style:
+
+![contact sheet](docs/img/contact_sheet_demo.jpg)
 
 ## Develop with Darkrooms (M-Film's app)
 
@@ -114,7 +124,10 @@ kfilm/
   mfilm_filmluts.py the 63 Film-Luts films (from M-Film)
   lut.py            .cube LUT reader (from M-Film)
   darkrooms.py      roll logs for Darkrooms, EXIF reader
+  camera450d.py     what to dial into the 450D for each film
+  pixelfont.py      K-Film's 5x7 pixel font (drawn in code)
   roll.py · card.py · contact.py · hald.py · cli.py
+tools/make_images.py   rebuilds the README pictures
 docs/  RECIPES.md · DARKROOMS.md · PORTING-450D.md
 ```
 

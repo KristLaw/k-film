@@ -40,7 +40,17 @@ def _pushed(film: Film, push: float) -> Film:
 
 
 def _iso(iso, push):
+    """ISO to set on the 450D: it goes 100..1600 (3200 as H)."""
     return int(round(iso * 2 ** push))
+
+
+def _iso_text(iso, push=0.0) -> str:
+    want = _iso(iso, push)
+    if want < 100:
+        return f"ISO 100 (the 450D's lowest; dial exposure comp. +{__import__('math').log2(100 / want):.1g} for box speed {want})"
+    if want > 1600:
+        return f"ISO {min(want, 3200)} ('H' in C.Fn ISO expansion)" if want <= 3200 else "ISO 3200 ('H'), and push in the darkroom"
+    return f"ISO {want}"
 
 
 def _sync(card: Path, r: Roll, quiet: bool = False) -> None:
@@ -88,8 +98,23 @@ def cmd_load(a):
     r = new_roll(card, film.id, frames, a.mode, a.push, darkrooms=dr)
     push = f", pushed {a.push:+g}" if a.push else ""
     print(f"Loaded {film.name} (ISO {film.iso}{push}), {frames} exposures, {r.mode} mode.")
-    print(f"Set your 450D to ISO {_iso(film.iso, a.push)}, Quality RAW, Review time Off. Happy shooting.")
+    print(f"Set your 450D to {_iso_text(film.iso, a.push)}, Quality RAW, Review time Off. Happy shooting.")
+    _camera_lines(film)
     _sync(card, r)
+
+
+def _camera_lines(film: Film) -> None:
+    from .camera450d import settings
+    s = settings(film)
+    print("Optional, for the camera's own preview JPEGs (the RAW stays the same):")
+    for line in s.lines():
+        print(f"  {line}")
+
+
+def cmd_camera(a):
+    film = get(a.film)
+    print(f"{film.name} on the 450D: {_iso_text(film.iso)}, Quality RAW, Review time Off")
+    _camera_lines(film)
 
 
 def cmd_status(a):
@@ -269,6 +294,10 @@ def main(argv=None):
         p = sub.add_parser(name, help=h)
         card_arg(p)
         p.set_defaults(fn=fn)
+
+    p = sub.add_parser("camera", help="what to set on the 450D for a film")
+    p.add_argument("film")
+    p.set_defaults(fn=cmd_camera)
 
     p = sub.add_parser("sync", help="write the roll log M-Film's Darkrooms app reads")
     card_arg(p)

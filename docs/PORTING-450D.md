@@ -62,6 +62,19 @@ fork can boot a 450D ROM dump before testing on the real camera.
 Estimated effort: months of reverse engineering, not a weekend. Step 5 is
 the most useful realistic goal.
 
+## What in an M-Film camera zip works on a 450D
+
+Checked file by file on `M-Film-camera-550D.109` (M-Film 0.2.1, November 2026):
+
+| File | What it is | On a 450D |
+|---|---|---|
+| `autoexec.bin`, `ML-SETUP.FIR` | Magic Lantern + M-Film, built for the 550D firmware 1.0.9 | ❌ Never. Other chip, other OS |
+| `ML/modules/*.mo`, `550D_109.sym` | camera modules (film OS, dual ISO, silent...) | ❌ 550D only |
+| `ML/fonts`, `ML/SETTINGS`, `ML/SAMPLES`, `ML/DATA/FOSFONT.BIN`, `FOSQR.BIN` | screens of the camera's film OS | ❌ camera only |
+| `ML/DATA/*8p.lut`, `*8r.lut` | Magic Lantern lens-correction (defishing) maps, not film colours | ❌ camera only |
+| `ML/DARKROOM/LOOK00…71.LUT` | each film's colour table (33³ grid on Cineon log, `FOL1` header with a hash of the film) | ✅ data, on the computer: all 72 match K-Film's colours to within 0.26/255 (rounding), so K-Film already has them |
+| `ML/DATA/FOSFILMS.BIN` | the shelf: names, picture style, WB per film | ✅ the picture style and WB part, as `kfilm camera <film>` (Kelvin → Daylight/Tungsten, since the 450D has none) |
+
 ## Why this repo exists instead
 
 The film feeling comes from three things: committing to one stock, not
